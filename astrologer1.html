@@ -1,0 +1,448 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cosmic Guide AI Astrologer</title>
+    <style>
+        :root {
+            --primary: #6a0dad;
+            --secondary: #9c27b0;
+            --accent: #e1bee7;
+            --text: #2c3e50;
+            --light: #f5f5f5;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            line-height: 1.6;
+            color: var(--text);
+            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+            min-height: 100vh;
+            margin: 0;
+            padding: 20px;
+        }
+        
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+            overflow: hidden;
+        }
+        
+        header {
+            background: linear-gradient(to right, var(--primary), var(--secondary));
+            color: white;
+            padding: 20px;
+            text-align: center;
+        }
+        
+        h1 {
+            margin: 0;
+            font-size: 2rem;
+        }
+        
+        .tagline {
+            font-style: italic;
+            opacity: 0.9;
+        }
+        
+        .app-container {
+            display: flex;
+            flex-direction: column;
+            padding: 20px;
+        }
+        
+        .input-section, .output-section {
+            padding: 20px;
+        }
+        
+        .input-section {
+            background-color: var(--light);
+            border-radius: 10px;
+            margin-bottom: 20px;
+        }
+        
+        .form-group {
+            margin-bottom: 15px;
+        }
+        
+        label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: 600;
+        }
+        
+        input, select, textarea {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            font-size: 16px;
+        }
+        
+        textarea {
+            min-height: 100px;
+            resize: vertical;
+        }
+        
+        button {
+            background: linear-gradient(to right, var(--primary), var(--secondary));
+            color: white;
+            border: none;
+            padding: 12px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 16px;
+            font-weight: 600;
+            transition: all 0.3s ease;
+        }
+        
+        button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+        }
+        
+        .output-section {
+            display: none;
+            background-color: white;
+            border-radius: 10px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
+        }
+        
+        .output-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 1px solid #eee;
+            padding-bottom: 10px;
+            margin-bottom: 15px;
+        }
+        
+        .zodiac-sign {
+            font-size: 2rem;
+            margin-right: 10px;
+        }
+        
+        .loading {
+            text-align: center;
+            padding: 20px;
+            display: none;
+        }
+        
+        .spinner {
+            border: 4px solid rgba(0, 0, 0, 0.1);
+            border-radius: 50%;
+            border-top: 4px solid var(--primary);
+            width: 30px;
+            height: 30px;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 15px;
+        }
+        
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        
+        .question-section {
+            margin-top: 30px;
+            padding-top: 20px;
+            border-top: 1px dashed #ddd;
+        }
+        
+        @media (max-width: 600px) {
+            .container {
+                border-radius: 0;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>Cosmic Guide</h1>
+            <p class="tagline">Your personal AI astrologer</p>
+        </header>
+        
+        <div class="app-container">
+            <div class="input-section">
+                <h2>Enter Your Birth Details</h2>
+                <div class="form-group">
+                    <label for="name">Full Name</label>
+                    <input type="text" id="name" placeholder="Your full name">
+                </div>
+                
+                <div class="form-group">
+                    <label for="birthdate">Date of Birth</label>
+                    <input type="date" id="birthdate">
+                </div>
+                
+                <div class="form-group">
+                    <label for="birthtime">Time of Birth</label>
+                    <input type="time" id="birthtime">
+                </div>
+                
+                <div class="form-group">
+                    <label for="birthplace">Place of Birth</label>
+                    <input type="text" id="birthplace" placeholder="City, Country">
+                </div>
+                
+                <button id="generate-btn">Generate My Astrological Profile</button>
+            </div>
+            
+            <div class="loading">
+                <div class="spinner"></div>
+                <p>Consulting the stars...</p>
+            </div>
+            
+            <div class="output-section">
+                <div class="output-header">
+                    <h2 id="output-title">Your Cosmic Profile</h2>
+                    <div class="zodiac-sign" id="zodiac-symbol"></div>
+                </div>
+                
+                <div id="astrology-output"></div>
+                
+                <div class="question-section">
+                    <h3>Ask the Cosmos a Question</h3>
+                    <div class="form-group">
+                        <label for="question">Your Question</label>
+                        <textarea id="question" placeholder="Ask anything about your future, relationships, career..."></textarea>
+                    </div>
+                    <button id="ask-btn">Ask the Stars</button>
+                    <div id="question-response" style="margin-top: 15px; display: none;">
+                        <h4>Cosmic Guidance:</h4>
+                        <p id="response-text"></p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Zodiac data
+        const zodiacSigns = [
+            { name: "Aries", symbol: "♈", dates: [3, 21, 4, 19], element: "Fire", traits: "Courageous, energetic, willful, commanding" },
+            { name: "Taurus", symbol: "♉", dates: [4, 20, 5, 20], element: "Earth", traits: "Patient, reliable, warmhearted, loving" },
+            { name: "Gemini", symbol: "♊", dates: [5, 21, 6, 20], element: "Air", traits: "Adaptable, outgoing, intelligent" },
+            { name: "Cancer", symbol: "♋", dates: [6, 21, 7, 22], element: "Water", traits: "Emotional, loving, intuitive, imaginative" },
+            { name: "Leo", symbol: "♌", dates: [7, 23, 8, 22], element: "Fire", traits: "Generous, warmhearted, creative, enthusiastic" },
+            { name: "Virgo", symbol: "♍", dates: [8, 23, 9, 22], element: "Earth", traits: "Loyal, analytical, kind, hardworking" },
+            { name: "Libra", symbol: "♎", dates: [9, 23, 10, 22], element: "Air", traits: "Diplomatic, urbane, romantic, charming" },
+            { name: "Scorpio", symbol: "♏", dates: [10, 23, 11, 21], element: "Water", traits: "Determined, forceful, emotional, intuitive" },
+            { name: "Sagittarius", symbol: "♐", dates: [11, 22, 12, 21], element: "Fire", traits: "Adventurous, philosophical, generous" },
+            { name: "Capricorn", symbol: "♑", dates: [12, 22, 1, 19], element: "Earth", traits: "Serious, independent, disciplined" },
+            { name: "Aquarius", symbol: "♒", dates: [1, 20, 2, 18], element: "Air", traits: "Deep, imaginative, original, uncompromising" },
+            { name: "Pisces", symbol: "♓", dates: [2, 19, 3, 20], element: "Water", traits: "Affectionate, empathetic, wise" }
+        ];
+
+        // Chinese zodiac data
+        const chineseZodiac = [
+            "Rat", "Ox", "Tiger", "Rabbit", "Dragon", "Snake", 
+            "Horse", "Goat", "Monkey", "Rooster", "Dog", "Pig"
+        ];
+
+        // Planetary positions (simplified)
+        const planets = [
+            { name: "Sun", influence: "Ego, vitality, and personality" },
+            { name: "Moon", influence: "Emotions, instincts, and subconscious" },
+            { name: "Mercury", influence: "Communication, intellect, and reasoning" },
+            { name: "Venus", influence: "Love, beauty, and money" },
+            { name: "Mars", influence: "Energy, action, and desire" },
+            { name: "Jupiter", influence: "Luck, expansion, and wisdom" },
+            { name: "Saturn", influence: "Discipline, responsibility, and limitations" },
+            { name: "Uranus", influence: "Innovation, rebellion, and change" },
+            { name: "Neptune", influence: "Intuition, dreams, and spirituality" },
+            { name: "Pluto", influence: "Transformation, power, and rebirth" }
+        ];
+
+        // House meanings
+        const houses = [
+            "Self, personality, and appearance",
+            "Money, possessions, and values",
+            "Communication, siblings, and short trips",
+            "Home, family, and roots",
+            "Creativity, children, and romance",
+            "Health, service, and daily routines",
+            "Partnerships and marriage",
+            "Sex, death, rebirth, and others' money",
+            "Higher learning, travel, and philosophy",
+            "Career, reputation, and public standing",
+            "Friends, hopes, and wishes",
+            "Subconscious, secrets, and self-undoing"
+        ];
+
+        // Tarot cards for answers
+        const tarotCards = [
+            { name: "The Fool", meaning: "New beginnings, spontaneity, a leap of faith" },
+            { name: "The Magician", meaning: "Skill, willpower, manifestation" },
+            { name: "The High Priestess", meaning: "Intuition, mystery, the subconscious" },
+            { name: "The Empress", meaning: "Fertility, femininity, abundance" },
+            { name: "The Emperor", meaning: "Authority, structure, a father figure" },
+            { name: "The Hierophant", meaning: "Tradition, conformity, spiritual wisdom" },
+            { name: "The Lovers", meaning: "Love, harmony, relationships, choices" },
+            { name: "The Chariot", meaning: "Willpower, determination, success" },
+            { name: "Strength", meaning: "Inner strength, courage, patience" },
+            { name: "The Hermit", meaning: "Soul-searching, introspection, solitude" }
+        ];
+
+        // Moon phases
+        const moonPhases = [
+            "New Moon: New beginnings, setting intentions",
+            "Waxing Crescent: Taking first actions toward goals",
+            "First Quarter: Overcoming challenges, making decisions",
+            "Waxing Gibbous: Refining and adjusting approach",
+            "Full Moon: Culmination, celebration, illumination",
+            "Waning Gibbous: Gratitude, sharing wisdom",
+            "Last Quarter: Letting go, forgiveness",
+            "Waning Crescent: Surrender, rest, preparation for new cycle"
+        ];
+
+        document.getElementById('generate-btn').addEventListener('click', generateProfile);
+        document.getElementById('ask-btn').addEventListener('click', answerQuestion);
+
+        function generateProfile() {
+            const name = document.getElementById('name').value.trim() || "Cosmic Traveler";
+            const birthdate = document.getElementById('birthdate').value;
+            const birthtime = document.getElementById('birthtime').value;
+            const birthplace = document.getElementById('birthplace').value.trim() || "a mysterious location";
+            
+            if (!birthdate) {
+                alert("Please enter your date of birth");
+                return;
+            }
+            
+            // Show loading
+            document.querySelector('.input-section').style.display = 'none';
+            document.querySelector('.loading').style.display = 'block';
+            
+            // Simulate processing delay
+            setTimeout(() => {
+                const date = new Date(birthdate);
+                const month = date.getMonth() + 1; // JavaScript months are 0-11
+                const day = date.getDate();
+                const year = date.getFullYear();
+                
+                // Get zodiac sign
+                const sign = getZodiacSign(month, day);
+                
+                // Get Chinese zodiac
+                const chineseSign = chineseZodiac[(year - 4) % 12];
+                
+                // Get random planetary influence
+                const planet = planets[Math.floor(Math.random() * planets.length)];
+                const house = houses[Math.floor(Math.random() * houses.length)];
+                const moonPhase = moonPhases[Math.floor(Math.random() * moonPhases.length)];
+                
+                // Generate output
+                const outputTitle = document.getElementById('output-title');
+                outputTitle.textContent = `${name}'s Cosmic Profile`;
+                
+                const zodiacSymbol = document.getElementById('zodiac-symbol');
+                zodiacSymbol.textContent = sign.symbol;
+                
+                const outputDiv = document.getElementById('astrology-output');
+                outputDiv.innerHTML = `
+                    <p><strong>Birth Details:</strong> ${birthdate} at ${birthtime || "unknown time"} in ${birthplace}</p>
+                    <h3>Your Zodiac Sign: ${sign.name} ${sign.symbol}</h3>
+                    <p><strong>Element:</strong> ${sign.element}</p>
+                    <p><strong>Key Traits:</strong> ${sign.traits}</p>
+                    <p><strong>Chinese Zodiac:</strong> ${chineseSign}</p>
+                    
+                    <h3>Current Cosmic Influences</h3>
+                    <p><strong>Planetary Alignment:</strong> ${planet.name} is influencing ${planet.influence}</p>
+                    <p><strong>House Activation:</strong> ${house}</p>
+                    <p><strong>Moon Phase:</strong> ${moonPhase}</p>
+                    
+                    <h3>Today's Guidance</h3>
+                    <p>${generateDailyGuidance(sign.name)}</p>
+                `;
+                
+                // Show output
+                document.querySelector('.loading').style.display = 'none';
+                document.querySelector('.output-section').style.display = 'block';
+            }, 1500);
+        }
+        
+        function getZodiacSign(month, day) {
+            for (const sign of zodiacSigns) {
+                const [startMonth, startDay, endMonth, endDay] = sign.dates;
+                if (
+                    (month === startMonth && day >= startDay) ||
+                    (month === endMonth && day <= endDay) ||
+                    (startMonth > endMonth && (month === startMonth || month === endMonth))
+                ) {
+                    return sign;
+                }
+            }
+            return zodiacSigns[0]; // Default to Aries if not found
+        }
+        
+        function generateDailyGuidance(sign) {
+            const activities = {
+                Aries: "Channel your fiery energy into a new project or creative endeavor.",
+                Taurus: "Take time to appreciate beauty around you and ground yourself in nature.",
+                Gemini: "Your curiosity is your strength today - learn something new.",
+                Cancer: "Nurture your emotional well-being and connect with loved ones.",
+                Leo: "Let your inner light shine - your confidence attracts opportunities.",
+                Virgo: "Organize your space and mind for greater clarity and efficiency.",
+                Libra: "Seek balance in all things and trust your sense of harmony.",
+                Scorpio: "Dive deep into your intuition - answers lie beneath the surface.",
+                Sagittarius: "Adventure calls - whether physical travel or mental exploration.",
+                Capricorn: "Your discipline will pay off - stay focused on long-term goals.",
+                Aquarius: "Innovative ideas flow - collaborate with like-minded souls.",
+                Pisces: "Your compassion heals - trust your dreams and intuition."
+            };
+            
+            const randomAdvice = [
+                "The stars suggest practicing gratitude today.",
+                "A chance encounter may bring unexpected wisdom.",
+                "Listen carefully to messages from the universe.",
+                "Your intuition is especially strong right now.",
+                "The cosmos encourages you to express your truth.",
+                "A period of reflection will reveal important insights."
+            ];
+            
+            return `${activities[sign]} ${randomAdvice[Math.floor(Math.random() * randomAdvice.length)]}`;
+        }
+        
+        function answerQuestion() {
+            const question = document.getElementById('question').value.trim();
+            if (!question) {
+                alert("Please ask your question to the cosmos");
+                return;
+            }
+            
+            const responseDiv = document.getElementById('question-response');
+            const responseText = document.getElementById('response-text');
+            
+            responseDiv.style.display = 'none';
+            
+            // Show loading for the question
+            responseText.textContent = "Consulting the tarot and planetary alignments...";
+            responseDiv.style.display = 'block';
+            
+            // Simulate thoughtful response after delay
+            setTimeout(() => {
+                const tarot = tarotCards[Math.floor(Math.random() * tarotCards.length)];
+                const planet = planets[Math.floor(Math.random() * planets.length)];
+                
+                const responses = [
+                    `The ${tarot.name} card appears, suggesting: ${tarot.meaning}`,
+                    `${planet.name} influences this matter: ${planet.influence}`,
+                    `The cosmic energies indicate this is a time for patience and observation.`,
+                    `Your path is illuminated by unexpected opportunities - stay open.`,
+                    `The alignment suggests important lessons about relationships.`,
+                    `A period of transformation approaches - trust the process.`,
+                    `The answer lies within your own intuition - meditate on this.`
+                ];
+                
+                responseText.textContent = responses[Math.floor(Math.random() * responses.length)];
+            }, 2000);
+        }
+    </script>
+</body>
+</html>
